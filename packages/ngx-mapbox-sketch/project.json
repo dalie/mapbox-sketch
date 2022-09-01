@@ -1,11 +1,12 @@
 {
   "projectType": "library",
   "sourceRoot": "packages/ngx-mapbox-sketch/src",
-  "prefix": "mapbox-sketch",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/packages/ngx-mapbox-sketch"],
+      "outputs": [
+        "dist/packages/ngx-mapbox-sketch"
+      ],
       "options": {
         "project": "packages/ngx-mapbox-sketch/ng-package.json"
       },
@@ -21,7 +22,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/ngx-mapbox-sketch"],
+      "outputs": [
+        "coverage/packages/ngx-mapbox-sketch"
+      ],
       "options": {
         "jestConfig": "packages/ngx-mapbox-sketch/jest.config.ts",
         "passWithNoTests": true

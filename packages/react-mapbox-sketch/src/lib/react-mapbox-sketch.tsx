@@ -6,7 +6,7 @@ export interface ReactMapboxSketchProps {}
 export function ReactMapboxSketch(props: ReactMapboxSketchProps) {
   return (
     <div className={styles['container']}>
-      <h1>Welcome to ReactMapboxSketch!</h1>
+      <h1>ReactMapboxSketch!</h1>
     </div>
   );
 }

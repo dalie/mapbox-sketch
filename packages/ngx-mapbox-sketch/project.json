@@ -1,0 +1,44 @@
+{
+  "projectType": "library",
+  "sourceRoot": "packages/ngx-mapbox-sketch/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/packages/ngx-mapbox-sketch"
+      ],
+      "options": {
+        "project": "packages/ngx-mapbox-sketch/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/ngx-mapbox-sketch/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/ngx-mapbox-sketch/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/ngx-mapbox-sketch"
+      ],
+      "options": {
+        "jestConfig": "packages/ngx-mapbox-sketch/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/ngx-mapbox-sketch/**/*.ts",
+          "packages/ngx-mapbox-sketch/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

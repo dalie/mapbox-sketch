@@ -1,0 +1,45 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/react-mapbox-sketch/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/react-mapbox-sketch",
+        "tsConfig": "packages/react-mapbox-sketch/tsconfig.lib.json",
+        "project": "packages/react-mapbox-sketch/package.json",
+        "entryFile": "packages/react-mapbox-sketch/src/index.ts",
+        "external": ["react/jsx-runtime"],
+        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "compiler": "babel",
+        "assets": [
+          {
+            "glob": "packages/react-mapbox-sketch/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/react-mapbox-sketch/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/react-mapbox-sketch"],
+      "options": {
+        "jestConfig": "packages/react-mapbox-sketch/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

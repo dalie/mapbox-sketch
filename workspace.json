@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "mapbox-sketch": "packages/mapbox-sketch",
+    "ngx-mapbox-sketch": "packages/ngx-mapbox-sketch",
+    "react-mapbox-sketch": "packages/react-mapbox-sketch",
+    "samples-angular": "packages/samples/angular",
+    "samples-react": "packages/samples/react"
+  }
+}

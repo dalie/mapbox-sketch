@@ -19,12 +19,26 @@ export class PolygonMode extends BaseMode implements SketchMode {
     if (layer?.paint) {
       layer.paint['circle-color'] = 'rgba(0, 0, 0, 0.1)';
     }
+
+    this.addListeners();
   }
 
-  override destroy() {
+  override addListeners() {
+    this.removeListeners();
+    this._map.on('mousemove', this.layerId, this._onHover);
+    this._map.on('mouseleave', this.layerId, this._onLayerLeave);
+    this._map.on('click', this.layerId, this._onFeatureClick);
+  }
+
+  override removeListeners() {
     this._map.off('mousemove', this.layerId, this._onHover);
     this._map.off('mouseleave', this.layerId, this._onLayerLeave);
     this._map.off('click', this.layerId, this._onFeatureClick);
+    this._map.off('click', this._onCreate);
+  }
+
+  override destroy() {
+    this.removeListeners();
 
     super.destroy();
   }
@@ -35,6 +49,7 @@ export class PolygonMode extends BaseMode implements SketchMode {
     if (this._map.getCanvas()) {
       this._map.getCanvas().style.cursor = 'crosshair';
     }
+    this._map.off('click', this._onCreate);
     this._map.on('click', this._onCreate);
   }
 

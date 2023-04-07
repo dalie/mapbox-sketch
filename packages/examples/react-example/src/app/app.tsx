@@ -1,8 +1,8 @@
 import {
   CircleMode,
   PolygonMode,
+  SketchEvent,
   SketchFeature,
-  SketchModeEvent,
 } from '@dalie/mapbox-sketch';
 import {
   ReactMapboxSketch,
@@ -24,21 +24,27 @@ export function App() {
     }
   }, [cachedFeatures]);
 
-  const handleSketchUpdate = useCallback((event: SketchModeEvent) => {
-    setFeatures((oldValue) => {
-      const newFeatures = [
-        ...oldValue.filter(
-          (feature) => feature.properties.mapbox_sketch_id !== event.featureId
-        ),
-      ];
+  const handleSketchUpdate = useCallback((event: SketchEvent) => {
+    if (
+      event.type === 'create' ||
+      event.type === 'update' ||
+      event.type === 'delete'
+    ) {
+      setFeatures((oldValue) => {
+        const newFeatures = [
+          ...oldValue.filter(
+            (feature) => feature.properties.mapbox_sketch_id !== event.featureId
+          ),
+        ];
 
-      if (event.type !== 'delete' && event.feature) {
-        newFeatures.push(event.feature);
-      }
+        if (event.type !== 'delete' && event.feature) {
+          newFeatures.push(event.feature);
+        }
 
-      localStorage.setItem('features', JSON.stringify(newFeatures));
-      return newFeatures;
-    });
+        localStorage.setItem('features', JSON.stringify(newFeatures));
+        return newFeatures;
+      });
+    }
   }, []);
 
   return (

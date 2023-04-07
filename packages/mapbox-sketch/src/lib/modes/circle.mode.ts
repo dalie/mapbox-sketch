@@ -12,38 +12,62 @@ export class CircleMode extends BaseMode implements SketchMode {
     super('CircleMode', map, {
       layerType: 'circle',
       layerPaint: {
-        'circle-color': 'rgba(0, 0, 0, 0.1)',
-        'circle-radius': 5,
+        'circle-color': 'rgba(0, 0, 0, 0.5)',
+        'circle-radius': 15,
       },
     });
+  }
 
+  override addListeners() {
+    this.removeListeners();
     this._map.on('mousemove', this.layerId, this._onHover);
     this._map.on('mouseleave', this.layerId, this._onLayerLeave);
     this._map.on('click', this.layerId, this._onFeatureClick);
+    this._map.off('click', this._onCreate);
   }
 
-  override destroy() {
+  override removeListeners() {
     this._map.off('mousemove', this.layerId, this._onHover);
     this._map.off('mouseleave', this.layerId, this._onLayerLeave);
     this._map.off('click', this.layerId, this._onFeatureClick);
+  }
+
+  override destroy() {
+    this.removeListeners();
 
     super.destroy();
+  }
+
+  override disable(): void {
+    super.disable();
+    this.removeListeners();
+  }
+
+  override enable(): void {
+    super.enable();
+    this.addListeners();
   }
 
   override start() {
     super.start();
 
-    if (this._map.getCanvas()) {
-      this._map.getCanvas().style.cursor = 'crosshair';
+    if (this.isSketching) {
+      //this.removeListeners();
+      if (this._map.getCanvas()) {
+        this._map.getCanvas().style.cursor = 'crosshair';
+      }
+      this._map.off('click', this._onCreate);
+      this._map.on('click', this._onCreate);
+    } else {
+      // this.addListeners();
     }
-    this._map.on('click', this._onCreate);
   }
 
   override stop() {
     if (this._map.getCanvas()) {
       this._map.getCanvas().style.cursor = '';
     }
-    this._map.off('click', this._onCreate);
+    //this.addListeners();
 
     super.stop();
   }
@@ -81,7 +105,7 @@ export class CircleMode extends BaseMode implements SketchMode {
 
     this._features.push(feature);
     this.source.setData(this.getDisplayFeatures(this._features));
-    this.stop();
+    //this.stop();
   };
 
   private _onHover = (e: mapboxgl.MapMouseEvent & mapboxgl.EventData) => {
@@ -128,6 +152,7 @@ export class CircleMode extends BaseMode implements SketchMode {
   private _onFeatureClick = (
     e: mapboxgl.MapMouseEvent & mapboxgl.EventData
   ) => {
+    console.log('click');
     const features = e['features'] as SketchFeature[];
     if (features.length > 0) {
       this._eventHandlers.forEach((callback) =>

@@ -1,13 +1,26 @@
 import { useCallback } from 'react';
 import { useMapboxSketchContext } from '../../context/react-mapbox-sketch-context';
+import { SketchMode } from '@dalie/mapbox-sketch';
 
 export function ReactMapboxSketchControl() {
   const { sketch } = useMapboxSketchContext();
 
   const handleModeClick = useCallback(
-    (modeId: string) => {
+    (newMode: SketchMode) => {
       if (sketch) {
-        sketch.modes[modeId].start();
+        if (newMode.isSketching) {
+          Object.values(sketch.modes).forEach((mode) => {
+            mode.stop();
+            mode.enable();
+          });
+        } else {
+          Object.values(sketch.modes).forEach((mode) => {
+            if (mode.id !== newMode.id) {
+              mode.disable();
+            }
+          });
+          newMode.start();
+        }
       }
     },
     [sketch]
@@ -29,9 +42,10 @@ export function ReactMapboxSketchControl() {
         gap: '10px',
       }}
     >
-      {Object.keys(sketch.modes).map((modeId) => (
+      {Object.values(sketch.modes).map((mode) => (
         <button
-          key={modeId}
+          key={mode.id}
+          disabled={mode.disabled}
           style={{
             padding: '10px',
             border: 'none',
@@ -39,9 +53,9 @@ export function ReactMapboxSketchControl() {
             borderRadius: '5px',
             cursor: 'pointer',
           }}
-          onClick={() => handleModeClick(modeId)}
+          onClick={() => handleModeClick(mode)}
         >
-          {modeId}
+          {mode.id}
         </button>
       ))}
     </div>

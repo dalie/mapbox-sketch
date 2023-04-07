@@ -1,8 +1,8 @@
-import { GeoJSONSource, Map } from 'mapbox-gl';
-import { SketchMode, SketchModeEvent } from '../types/sketch.mode';
-import { SketchFeature } from '../types';
-import { Feature, FeatureCollection } from 'geojson';
 import { featureCollection } from '@turf/turf';
+import { Feature, FeatureCollection } from 'geojson';
+import { GeoJSONSource, Map } from 'mapbox-gl';
+import { SketchFeature } from '../types';
+import { SketchEvent } from '../types/sketch.mode';
 
 interface BaseModeOptions {
   layerType?: mapboxgl.AnyLayer['type'];
@@ -10,14 +10,24 @@ interface BaseModeOptions {
   editLayerPaint?: mapboxgl.AnyPaint;
 }
 
-export class BaseMode implements SketchMode {
+export class BaseMode {
+  protected _disabled = false;
   protected _isSketching = false;
-  protected _eventHandlers: ((event: SketchModeEvent) => void)[] = [];
+  protected _eventHandlers: ((event: SketchEvent) => void)[] = [];
   protected _features: SketchFeature[] = [];
 
   get id() {
     return this._id;
   }
+
+  get disabled() {
+    return this._disabled;
+  }
+
+  get isSketching() {
+    return this._isSketching;
+  }
+
   get sourceId() {
     return `mapbox_sketch_${this._id}_source`;
   }
@@ -34,6 +44,9 @@ export class BaseMode implements SketchMode {
     return this._map.getSource(this.sourceId) as GeoJSONSource;
   }
 
+  /**
+   * Initialize the source and layer for the mode.
+   */
   constructor(
     private _id: string,
     protected _map: Map,
@@ -77,8 +90,10 @@ export class BaseMode implements SketchMode {
 
       this._map.addLayer({
         id: this.layerId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: mergedOptions.layerType as any,
         source: this.sourceId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         paint: mergedOptions.layerPaint as any,
       });
 
@@ -99,6 +114,17 @@ export class BaseMode implements SketchMode {
     }
   }
 
+  addListeners() {
+    //implemented in child classes
+  }
+
+  removeListeners() {
+    //implemented in child classes
+  }
+
+  /**
+   * Calls stop and removes the source and layers.
+   */
   destroy() {
     this.stop();
     if (this._map.getLayer(this.layerId)) {
@@ -108,6 +134,19 @@ export class BaseMode implements SketchMode {
     }
   }
 
+  disable() {
+    this._disabled = true;
+    this.removeListeners();
+  }
+
+  enable() {
+    this._disabled = false;
+    this.addListeners();
+  }
+
+  /**
+   * Returns a FeatureCollection with all features.
+   */
   getDisplayFeatures(features: SketchFeature[]): FeatureCollection {
     const featureCollections = features.map(
       (feature) => this.getDisplayFeature(feature).features
@@ -116,6 +155,9 @@ export class BaseMode implements SketchMode {
     return featureCollection(featureCollections.flat(1) as Feature[]);
   }
 
+  /**
+   * Returns a FeatureCollection with a single feature.
+   */
   getDisplayFeature(feature: SketchFeature): FeatureCollection {
     return {
       type: 'FeatureCollection',
@@ -123,22 +165,50 @@ export class BaseMode implements SketchMode {
     };
   }
 
-  onFeatureUpdate(callback: (event: SketchModeEvent) => void) {
+  /**
+   * Calls all event handlers.
+   */
+  onFeatureUpdate(callback: (event: SketchEvent) => void) {
     this._eventHandlers.push(callback);
   }
 
+  /**
+   * Sets the features and updates the source.
+   */
   setFeatures(features: SketchFeature[]) {
     this._features = features;
     this.source.setData(this.getDisplayFeatures(features));
   }
+
+  /**
+   * Toggles _isSketching and calls start or stop.
+   */
   start() {
     this._isSketching = !this._isSketching;
     if (!this._isSketching) {
       return this.stop();
     }
+
+    this._eventHandlers.forEach((handler) =>
+      handler({
+        type: 'start',
+        modeId: this._id,
+      })
+    );
   }
 
+  /**
+   * Sets _isSketching to false.
+   */
   stop() {
+    if (this._isSketching) {
+      this._eventHandlers.forEach((handler) =>
+        handler({
+          type: 'stop',
+          modeId: this._id,
+        })
+      );
+    }
     this._isSketching = false;
   }
 }

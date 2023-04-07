@@ -1,10 +1,6 @@
 import { Map } from 'mapbox-gl';
-import {
-  SketchMode,
-  SketchModeClass,
-  SketchModeEvent,
-} from './types/sketch.mode';
 import { SketchFeature } from './types';
+import { SketchEvent, SketchMode, SketchModeClass } from './types/sketch.mode';
 
 export class MapboxSketch {
   private _modes: Record<string, SketchMode> = {};
@@ -17,6 +13,22 @@ export class MapboxSketch {
     for (const mode of modes) {
       const m = new mode(map);
       this._modes[m.id] = m;
+      m.enable();
+      m.onFeatureUpdate((event) => {
+        if (event.type === 'start') {
+          Object.values(this._modes).forEach((mode) => {
+            if (mode.isSketching && mode.id !== m.id) {
+              mode.stop();
+              mode.disable();
+            }
+          });
+        }
+        if (event.type === 'stop') {
+          Object.values(this._modes).forEach((mode) => {
+            mode.enable();
+          });
+        }
+      });
     }
   }
 
@@ -24,7 +36,7 @@ export class MapboxSketch {
     Object.values(this._modes).forEach((mode) => mode.destroy());
   }
 
-  onFeatureUpdate(callback: (event: SketchModeEvent) => void) {
+  onFeatureUpdate(callback: (event: SketchEvent) => void) {
     Object.values(this._modes).forEach((mode) =>
       mode.onFeatureUpdate(callback)
     );

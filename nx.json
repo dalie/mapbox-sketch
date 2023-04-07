@@ -1,0 +1,45 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
+    }
+  },
+  "extends": "nx/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "targetDefaults": {
+    "test": {
+      "inputs": ["default", "^default"]
+    },
+    "lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore"
+      ]
+    }
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "none",
+        "linter": "eslint",
+        "bundler": "vite",
+        "babel": true
+      },
+      "library": {
+        "style": "none",
+        "linter": "eslint",
+        "unitTestRunner": "vitest"
+      },
+      "component": {
+        "style": "none"
+      }
+    }
+  }
+}

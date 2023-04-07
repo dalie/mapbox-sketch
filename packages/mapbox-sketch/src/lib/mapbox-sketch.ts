@@ -3,7 +3,7 @@ import {
   SketchMode,
   SketchModeClass,
   SketchModeEvent,
-} from './modes/sketch.mode';
+} from './types/sketch.mode';
 import { SketchFeature } from './types';
 
 export class MapboxSketch {

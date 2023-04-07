@@ -1,6 +1,6 @@
 import { FeatureCollection } from 'geojson';
 import { Map } from 'mapbox-gl';
-import { SketchFeature } from '../types/SketchFeature';
+import { SketchFeature } from './SketchFeature';
 
 export type SketchModeEventType = 'select' | 'create' | 'update' | 'delete';
 

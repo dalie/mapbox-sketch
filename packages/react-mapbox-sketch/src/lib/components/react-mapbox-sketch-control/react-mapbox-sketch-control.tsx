@@ -1,17 +1,21 @@
-import { useCallback, useContext } from 'react';
-import {
-  ReactMapboxSketchContext,
-  useMapboxSketchContext,
-} from '../../context/react-mapbox-sketch-context';
+import { useCallback } from 'react';
+import { useMapboxSketchContext } from '../../context/react-mapbox-sketch-context';
 
 export function ReactMapboxSketchControl() {
   const { sketch } = useMapboxSketchContext();
 
-  const handlePolygonClick = useCallback(() => {
-    if (sketch) {
-      sketch.modes['PolygonMode'].start();
-    }
-  }, [sketch]);
+  const handleModeClick = useCallback(
+    (modeId: string) => {
+      if (sketch) {
+        sketch.modes[modeId].start();
+      }
+    },
+    [sketch]
+  );
+
+  if (!sketch) {
+    return null;
+  }
 
   return (
     <div
@@ -25,18 +29,21 @@ export function ReactMapboxSketchControl() {
         gap: '10px',
       }}
     >
-      <button
-        style={{
-          padding: '10px',
-          border: 'none',
-          background: 'white',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-        onClick={handlePolygonClick}
-      >
-        Polygon
-      </button>
+      {Object.keys(sketch.modes).map((modeId) => (
+        <button
+          key={modeId}
+          style={{
+            padding: '10px',
+            border: 'none',
+            background: 'white',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+          onClick={() => handleModeClick(modeId)}
+        >
+          {modeId}
+        </button>
+      ))}
     </div>
   );
 }

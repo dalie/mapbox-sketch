@@ -1,24 +1,25 @@
 import { Position, featureCollection, point } from '@turf/turf';
 import { Feature, FeatureCollection } from 'geojson';
-import { CircleLayer, Map } from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { SketchFeature } from '../types/SketchFeature';
 import { SketchMode } from '../types/sketch.mode';
 import { BaseMode } from './base.mode';
 
-export class PolygonMode extends BaseMode implements SketchMode {
+export class CircleMode extends BaseMode implements SketchMode {
   private _hoveredFeatureId: string | number | undefined = undefined;
 
   constructor(map: Map) {
-    super('PolygonMode', map);
+    super('CircleMode', map, {
+      layerType: 'circle',
+      layerPaint: {
+        'circle-color': 'rgba(0, 0, 0, 0.1)',
+        'circle-radius': 5,
+      },
+    });
 
     this._map.on('mousemove', this.layerId, this._onHover);
     this._map.on('mouseleave', this.layerId, this._onLayerLeave);
     this._map.on('click', this.layerId, this._onFeatureClick);
-
-    const layer = this._map.getLayer(this.layerId) as CircleLayer;
-    if (layer?.paint) {
-      layer.paint['circle-color'] = 'rgba(0, 0, 0, 0.1)';
-    }
   }
 
   override destroy() {

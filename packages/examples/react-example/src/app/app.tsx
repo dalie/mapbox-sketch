@@ -1,18 +1,18 @@
-import { Map as ReactMap } from 'react-map-gl';
+import {
+  CircleMode,
+  PolygonMode,
+  SketchFeature,
+  SketchModeEvent,
+} from '@dalie/mapbox-sketch';
 import {
   ReactMapboxSketch,
   ReactMapboxSketchControl,
 } from '@dalie/react-mapbox-sketch';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Feature } from 'geojson';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  PolygonMode,
-  SketchFeature,
-  SketchModeEvent,
-} from '@dalie/mapbox-sketch';
+import { Map as ReactMap } from 'react-map-gl';
 
-const sketchModes = [PolygonMode];
+const sketchModes = [CircleMode, PolygonMode];
 
 export function App() {
   const [features, setFeatures] = useState<SketchFeature[]>([]);
